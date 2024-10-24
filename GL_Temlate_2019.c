@@ -49,11 +49,11 @@ static GLsizei lastWidth;
 
 // Opis tekstury
 BITMAPINFOHEADER	bitmapInfoHeader;	// nag³ówek obrazu
-unsigned char*		bitmapData;			// dane tekstury
+unsigned char* bitmapData;			// dane tekstury
 unsigned int		texture[2];			// obiekt tekstury
 
 
-										// Declaration for Window procedure
+// Declaration for Window procedure
 LRESULT CALLBACK WndProc(HWND    hWnd,
 	UINT    message,
 	WPARAM  wParam,
@@ -138,9 +138,9 @@ void ChangeSize(GLsizei w, GLsizei h)
 
 	// Establish clipping volume (left, right, bottom, top, near, far)
 	if (w <= h)
-		glOrtho(-nRange, nRange, -nRange*h / w, nRange*h / w, -nRange, nRange);
+		glOrtho(-nRange, nRange, -nRange * h / w, nRange * h / w, -nRange, nRange);
 	else
-		glOrtho(-nRange*w / h, nRange*w / h, -nRange, nRange, -nRange, nRange);
+		glOrtho(-nRange * w / h, nRange * w / h, -nRange, nRange, -nRange, nRange);
 
 	// Establish perspective: 
 	/*
@@ -168,31 +168,31 @@ void SetupRC()
 
 	glEnable(GL_DEPTH_TEST);	// Hidden surface removal
 	glFrontFace(GL_CCW);		// Counter clock-wise polygons face out
-								//glEnable(GL_CULL_FACE);		// Do not calculate inside of jet
+	//glEnable(GL_CULL_FACE);		// Do not calculate inside of jet
 
-								// Enable lighting
-								//glEnable(GL_LIGHTING);
+	// Enable lighting
+	//glEnable(GL_LIGHTING);
 
-								// Setup and enable light 0
-								//glLightfv(GL_LIGHT0,GL_AMBIENT,ambientLight);
-								//glLightfv(GL_LIGHT0,GL_DIFFUSE,diffuseLight);
-								//glLightfv(GL_LIGHT0,GL_SPECULAR,specular);
-								//glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
-								//glEnable(GL_LIGHT0);
+	// Setup and enable light 0
+	//glLightfv(GL_LIGHT0,GL_AMBIENT,ambientLight);
+	//glLightfv(GL_LIGHT0,GL_DIFFUSE,diffuseLight);
+	//glLightfv(GL_LIGHT0,GL_SPECULAR,specular);
+	//glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
+	//glEnable(GL_LIGHT0);
 
-								// Enable color tracking
-								//glEnable(GL_COLOR_MATERIAL);
+	// Enable color tracking
+	//glEnable(GL_COLOR_MATERIAL);
 
-								// Set Material properties to follow glColor values
-								//glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	// Set Material properties to follow glColor values
+	//glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
-								// All materials hereafter have full specular reflectivity
-								// with a high shine
-								//glMaterialfv(GL_FRONT, GL_SPECULAR,specref);
-								//glMateriali(GL_FRONT,GL_SHININESS,128);
+	// All materials hereafter have full specular reflectivity
+	// with a high shine
+	//glMaterialfv(GL_FRONT, GL_SPECULAR,specref);
+	//glMateriali(GL_FRONT,GL_SHININESS,128);
 
 
-								// White background
+	// White background
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	// Black brush
 	glColor3f(0.0, 0.0, 0.0);
@@ -255,7 +255,7 @@ void skrzynka(void)
 
 void walec01(void)
 {
-	GLUquadricObj*obj;
+	GLUquadricObj* obj;
 	obj = gluNewQuadric();
 	gluQuadricNormals(obj, GLU_SMOOTH);
 	glColor3d(1, 0, 0);
@@ -270,7 +270,7 @@ void walec01(void)
 
 void kula(void)
 {
-	GLUquadricObj*obj;
+	GLUquadricObj* obj;
 	obj = gluNewQuadric();
 	gluQuadricTexture(obj, GL_TRUE);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
@@ -282,21 +282,114 @@ void kula(void)
 }
 
 
+void szescian(void)
+{
+	glBegin(GL_QUADS);
+	glColor3d(1, 0.5, 0);
+	glVertex3d(20, 20, 20);
+	glVertex3d(-20, 20, 20);
+	glVertex3d(-20, -20, 20);
+	glVertex3d(20, -20, 20);
+	glColor3d(0, 0.5, 1);
+	glVertex3d(20, 20, 20);
+	glVertex3d(20, -20, 20);
+	glVertex3d(20, -20, -20);
+	glVertex3d(20, 20, -20);
+	glEnd();
+}
+
+
+void walec(double r, double h)
+{
+	double angle, x, y;
+	glColor3d(0.5, 1, 0);
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3d(0.0f, 0.0f, 0.0f);
+	for (angle = 0.0f; angle <= (2.0f * GL_PI); angle += (GL_PI / 8.0f))
+	{
+		x = r * sin(angle);
+		y = r * cos(angle);
+		glVertex3d(x, y, 0.0);
+	}
+	glEnd();
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3d(0.0f, 0.0f, h);
+	for (angle = 0.0f; angle <= (2.0f * GL_PI); angle += (GL_PI / 8.0f))
+	{
+		x = r * sin(-angle);
+		y = r * cos(-angle);
+		glVertex3d(x, y, h);
+	}
+	glEnd();
+	glBegin(GL_QUAD_STRIP);
+	for (angle = 0.0f; angle <= (2.0f * GL_PI); angle += (GL_PI / 8.0f))
+	{
+		x = r * sin(angle);
+		y = r * cos(angle);
+		glVertex3d(x, y, 0);
+		glVertex3d(x, y, h);
+	}
+	glEnd();
+}
+
+void walec1(double r, double h, double x, double y, double start_angle, double stop_angle) {
+	double angle, x1, y1;
+	glColor3d(0.5, 1, 0);
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3d(x, y, h);
+	for (angle = start_angle; angle <= stop_angle; angle += (GL_PI / 8.0f))
+	{
+		x1 = r * sin(angle);
+		y1 = r * cos(angle);
+		glVertex3d(x1 + x, y1 + y, h);
+	}
+	glEnd();
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3d(x, y, 0);
+	for (angle = start_angle; angle <= stop_angle; angle += (GL_PI / 8.0f))
+	{
+		x1 = r * sin(angle);
+		y1 = r * cos(angle);
+		glVertex3d(x1 + x, -y1 + y, 0);
+	}
+	glEnd();
+	glBegin(GL_QUAD_STRIP);
+	for (angle = start_angle; angle <= stop_angle; angle += (GL_PI / 8.0f))
+	{
+		x1 = r * sin(angle);
+		y1 = r * cos(angle);
+		glVertex3d(x1 + x, y1 + y, h);
+		glVertex3d(x1 + x, y1 + y, 0);
+	}
+	glEnd();
+}
+
+void ramie(double r1, double r2, double h, double d)
+{
+	walec1(r1, h, d/2, 0.0, 0.0, GL_PI);
+	walec1(r2, h, -d/2, 0.0, GL_PI, 2.0 * GL_PI);
+	glBegin(GL_QUAD_STRIP);
+	glVertex3d(0, r1, 0);
+	glVertex3d(d, r2, 0);
+	glVertex3d(0, -r1, 0);
+	glVertex3d(d, -r2, 0);
+	glEnd();
+}
 
 
 // LoadBitmapFile
 // opis: ³aduje mapê bitow¹ z pliku i zwraca jej adres.
 //       Wype³nia strukturê nag³ówka.
 //	 Nie obs³uguje map 8-bitowych.
-unsigned char *LoadBitmapFile(char *filename, BITMAPINFOHEADER *bitmapInfoHeader)
+unsigned char* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader)
 {
-	FILE *filePtr;							// wskaŸnik pozycji pliku
+	FILE* filePtr;							// wskaŸnik pozycji pliku
 	BITMAPFILEHEADER	bitmapFileHeader;		// nag³ówek pliku
-	unsigned char		*bitmapImage;			// dane obrazu
+	unsigned char* bitmapImage;			// dane obrazu
 	int					imageIdx = 0;		// licznik pikseli
 	unsigned char		tempRGB;				// zmienna zamiany sk³adowych
 
-												// otwiera plik w trybie "read binary"
+	// otwiera plik w trybie "read binary"
 	filePtr = fopen(filename, "rb");
 	if (filePtr == NULL)
 		return NULL;
@@ -371,13 +464,16 @@ void RenderScene(void)
 
 	//Sposób na odróŸnienie "przedniej" i "tylniej" œciany wielok¹ta:
 	glPolygonMode(GL_BACK, GL_LINE);
+	//szescian();
+	//walec(50,20);
+	ramie(40, 30, 10, 70);
 
 	//Uzyskanie siatki:
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
 	//Wyrysowanie prostokata:
-	glRectd(-10.0, -10.0, 20.0, 20.0);
-	
+	//glRectd(-10.0, -10.0, 20.0, 20.0);
+
 	/////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////
@@ -412,7 +508,7 @@ void SetDCPixelFormat(HDC hDC)
 		0,                                      // Not used to select mode
 		0,0,0 };                                // Not used to select mode
 
-												// Choose a pixel format that best matches that described in pfd
+	// Choose a pixel format that best matches that described in pfd
 	nPixelFormat = ChoosePixelFormat(hDC, &pfd);
 
 	// Set the pixel format for the device context
@@ -426,7 +522,7 @@ HPALETTE GetOpenGLPalette(HDC hDC)
 {
 	HPALETTE hRetPal = NULL;	// Handle to palette to be created
 	PIXELFORMATDESCRIPTOR pfd;	// Pixel Format Descriptor
-	LOGPALETTE *pPal;			// Pointer to memory for logical palette
+	LOGPALETTE* pPal;			// Pointer to memory for logical palette
 	int nPixelFormat;			// Pixel format index
 	int nColors;				// Number of entries in palette
 	int i;						// Counting variable
@@ -453,9 +549,9 @@ HPALETTE GetOpenGLPalette(HDC hDC)
 	pPal->palVersion = 0x300;		// Windows 3.0
 	pPal->palNumEntries = nColors; // table size
 
-								   // Build mask of all 1's.  This creates a number represented by having
-								   // the low order x bits set, where x = pfd.cRedBits, pfd.cGreenBits, and
-								   // pfd.cBlueBits.  
+	// Build mask of all 1's.  This creates a number represented by having
+	// the low order x bits set, where x = pfd.cRedBits, pfd.cGreenBits, and
+	// pfd.cBlueBits.  
 	RedRange = (1 << pfd.cRedBits) - 1;
 	GreenRange = (1 << pfd.cGreenBits) - 1;
 	BlueRange = (1 << pfd.cBlueBits) - 1;
@@ -593,7 +689,7 @@ LRESULT CALLBACK WndProc(HWND    hWnd,
 		SetupRC();
 		glGenTextures(2, &texture[0]);                  // tworzy obiekt tekstury			
 
-														// ³aduje pierwszy obraz tekstury:
+		// ³aduje pierwszy obraz tekstury:
 		bitmapData = LoadBitmapFile("Bitmapy\\checker.bmp", &bitmapInfoHeader);
 
 		glBindTexture(GL_TEXTURE_2D, texture[0]);       // aktywuje obiekt tekstury
