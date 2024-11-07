@@ -332,25 +332,25 @@ void walec(double r, double h)
 	glEnd();
 }
 
-void walec1(double r, double h, double x, double y, double start_angle, double stop_angle) {
+void ramie_walce_czesc(double r, double h, double x, double y, double z, double start_angle, double stop_angle) {
 	double angle, x1, y1;
 	glColor3d(0.5, 1, 0);
 	glBegin(GL_TRIANGLE_FAN);
-	glVertex3d(x, y, h);
+	glVertex3d(x, y, z + h);
 	for (angle = start_angle; angle <= stop_angle; angle += (GL_PI / 8.0f))
 	{
 		x1 = r * sin(angle);
 		y1 = r * cos(angle);
-		glVertex3d(x1 + x, y1 + y, h);
+		glVertex3d(x1 + x, y1 + y, z + h);
 	}
 	glEnd();
 	glBegin(GL_TRIANGLE_FAN);
-	glVertex3d(x, y, 0);
+	glVertex3d(x, y, z);
 	for (angle = start_angle; angle <= stop_angle; angle += (GL_PI / 8.0f))
 	{
 		x1 = r * sin(angle);
 		y1 = r * cos(angle);
-		glVertex3d(x1 + x, -y1 + y, 0);
+		glVertex3d(x1 + x, -y1 + y, z);
 	}
 	glEnd();
 	glBegin(GL_QUAD_STRIP);
@@ -358,21 +358,39 @@ void walec1(double r, double h, double x, double y, double start_angle, double s
 	{
 		x1 = r * sin(angle);
 		y1 = r * cos(angle);
-		glVertex3d(x1 + x, y1 + y, h);
-		glVertex3d(x1 + x, y1 + y, 0);
+		glVertex3d(x1 + x, y1 + y, z + h);
+		glVertex3d(x1 + x, y1 + y, z + 0);
 	}
 	glEnd();
 }
 
-void ramie(double r1, double r2, double h, double d)
+void ramie(double r1, double r2, double h, double d, double x, double y, double z)
 {
-	walec1(r1, h, d/2, 0.0, 0.0, GL_PI);
-	walec1(r2, h, -d/2, 0.0, GL_PI, 2.0 * GL_PI);
+	ramie_walce_czesc(r1, h, x + d / 2, y, z, 0.0, GL_PI);
+	ramie_walce_czesc(r2, h, x - d / 2, y, z, GL_PI, 2.0 * GL_PI);
 	glBegin(GL_QUAD_STRIP);
-	glVertex3d(0, r1, 0);
-	glVertex3d(d, r2, 0);
-	glVertex3d(0, -r1, 0);
-	glVertex3d(d, -r2, 0);
+	glVertex3d(x - d / 2, y + r2, z + h);
+	glVertex3d(x + d / 2, y + r1, z + h);
+	glVertex3d(x - d / 2, y - r2, z + h);
+	glVertex3d(x + d / 2, y - r1, z + h);
+	glEnd();
+	glBegin(GL_QUAD_STRIP);
+	glVertex3d(x - d / 2, y + r2, z + 0);
+	glVertex3d(x - d / 2, y - r2, z + 0);
+	glVertex3d(x + d / 2, y + r1, z + 0);
+	glVertex3d(x + d / 2, y - r1, z + 0);
+	glEnd();
+	glBegin(GL_QUAD_STRIP);
+	glVertex3d(x - d / 2, y + r2, z + h);
+	glVertex3d(x - d / 2, y + r2, z + 0);
+	glVertex3d(x + d / 2, y + r1, z + h);
+	glVertex3d(x + d / 2, y + r1, z + 0);
+	glEnd();
+	glBegin(GL_QUAD_STRIP);
+	glVertex3d(x - d / 2, y - r2, z + 0);
+	glVertex3d(x - d / 2, y - r2, z + h);
+	glVertex3d(x + d / 2, y - r1, z + 0);
+	glVertex3d(x + d / 2, y - r1, z + h);
 	glEnd();
 }
 
@@ -466,7 +484,7 @@ void RenderScene(void)
 	glPolygonMode(GL_BACK, GL_LINE);
 	//szescian();
 	//walec(50,20);
-	ramie(40, 30, 10, 70);
+	ramie(40 / 2.0, 20 / 2.0, 5, 40, 0.0, 0.0, 0.0);
 
 	//Uzyskanie siatki:
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
