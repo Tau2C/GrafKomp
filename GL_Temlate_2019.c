@@ -47,6 +47,10 @@ static GLfloat yRot = 0.0f;
 static GLsizei lastHeight;
 static GLsizei lastWidth;
 
+static double rot1, rot2, rot3;
+static double rot4, rot5, rot6;
+static unsigned int licznik;
+
 // Opis tekstury
 BITMAPINFOHEADER	bitmapInfoHeader;	// nag³ówek obrazu
 unsigned char* bitmapData;			// dane tekstury
@@ -364,36 +368,69 @@ void ramie_walce_czesc(double r, double h, double x, double y, double z, double 
 	glEnd();
 }
 
-void ramie(double r1, double r2, double h, double d, double x, double y, double z)
+void ramie(double r1, double r2, double h, double d)
 {
-	ramie_walce_czesc(r1, h, x + d / 2, y, z, 0.0, GL_PI);
-	ramie_walce_czesc(r2, h, x - d / 2, y, z, GL_PI, 2.0 * GL_PI);
+	ramie_walce_czesc(r1, h, 0, 0, 0, GL_PI, 2.0 * GL_PI);
+	ramie_walce_czesc(r2, h, d, 0, 0, 0.0, GL_PI);
 	glBegin(GL_QUAD_STRIP);
-	glVertex3d(x - d / 2, y + r2, z + h);
-	glVertex3d(x + d / 2, y + r1, z + h);
-	glVertex3d(x - d / 2, y - r2, z + h);
-	glVertex3d(x + d / 2, y - r1, z + h);
+	glVertex3d(0, r1, h);
+	glVertex3d(d, r2, h);
+	glVertex3d(0, -r1, h);
+	glVertex3d(d, -r2, h);
 	glEnd();
 	glBegin(GL_QUAD_STRIP);
-	glVertex3d(x - d / 2, y + r2, z + 0);
-	glVertex3d(x - d / 2, y - r2, z + 0);
-	glVertex3d(x + d / 2, y + r1, z + 0);
-	glVertex3d(x + d / 2, y - r1, z + 0);
+	glVertex3d(0, r1, 0);
+	glVertex3d(0, -r1, 0);
+	glVertex3d(d, r2, 0);
+	glVertex3d(d, -r2, 0);
 	glEnd();
 	glBegin(GL_QUAD_STRIP);
-	glVertex3d(x - d / 2, y + r2, z + h);
-	glVertex3d(x - d / 2, y + r2, z + 0);
-	glVertex3d(x + d / 2, y + r1, z + h);
-	glVertex3d(x + d / 2, y + r1, z + 0);
+	glVertex3d(0, r1, h);
+	glVertex3d(0, r1, 0);
+	glVertex3d(d, r2, h);
+	glVertex3d(d, r2, 0);
 	glEnd();
 	glBegin(GL_QUAD_STRIP);
-	glVertex3d(x - d / 2, y - r2, z + 0);
-	glVertex3d(x - d / 2, y - r2, z + h);
-	glVertex3d(x + d / 2, y - r1, z + 0);
-	glVertex3d(x + d / 2, y - r1, z + h);
+	glVertex3d(0, -r1, 0);
+	glVertex3d(0, -r1, h);
+	glVertex3d(d, -r2, 0);
+	glVertex3d(d, -r2, h);
 	glEnd();
 }
 
+void robot(double d1, double d2, double d3)
+{
+	glPushMatrix();
+	glScaled(0.5, 0.5, 0.5);
+	glRotated(-90, 1, 0, 0);
+	walec(30, 5);
+	glTranslated(0, 0, 5);
+	walec(10, 40);
+	glTranslated(0, 0, 40);
+	glRotated(d1, 0, 0, 1);
+	walec(10, 40);
+	glTranslated(0, 0, 40);
+	glRotated(90, 0, 1, 0);
+	glTranslated(0, 0, -20);
+	walec(10, 40);
+	glTranslated(0, 0, 40);
+	glRotated(90 + d2, 0, 0, 1);
+	ramie(15, 10, 5, 30);
+	glTranslated(30, 0, -5);
+	glRotated(d3, 0, 0, 1);
+	ramie(15, 10, 5, 30);
+	glPopMatrix();
+}
+
+void dwa_roboty()
+{
+	glPushMatrix();
+	robot(rot1, rot2, rot3);
+	glTranslated(65, 0, 0);
+	glScaled(2, 2, 2);
+	robot(rot4, rot5, rot6);
+	glPopMatrix();
+}
 
 // LoadBitmapFile
 // opis: ³aduje mapê bitow¹ z pliku i zwraca jej adres.
@@ -475,19 +512,17 @@ void RenderScene(void)
 	glPushMatrix();
 	glRotatef(xRot, 1.0f, 0.0f, 0.0f);
 	glRotatef(yRot, 0.0f, 1.0f, 0.0f);
+	glTranslated(0, -50, 0);
 
 	/////////////////////////////////////////////////////////////////
 	// MIEJSCE NA KOD OPENGL DO TWORZENIA WLASNYCH SCEN:		   //
 	/////////////////////////////////////////////////////////////////
 
 	//Sposób na odróŸnienie "przedniej" i "tylniej" œciany wielok¹ta:
-	glPolygonMode(GL_BACK, GL_LINE);
-	//szescian();
-	//walec(50,20);
-	ramie(40 / 2.0, 20 / 2.0, 5, 40, 0.0, 0.0, 0.0);
-
-	//Uzyskanie siatki:
-	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	//glPolygonMode(GL_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glTranslated(-65, 0, 0);
+	dwa_roboty();
 
 	//Wyrysowanie prostokata:
 	//glRectd(-10.0, -10.0, 20.0, 20.0);
@@ -744,6 +779,8 @@ LRESULT CALLBACK WndProc(HWND    hWnd,
 
 		// ustalenie sposobu mieszania tekstury z t³em
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+		SetTimer(hWnd, 101, 200, NULL);
 		break;
 
 		// Window is being destroyed, cleanup
@@ -755,6 +792,8 @@ LRESULT CALLBACK WndProc(HWND    hWnd,
 		// Delete the palette if it was created
 		if (hPalette != NULL)
 			DeleteObject(hPalette);
+
+		KillTimer(hWnd, 101);
 
 		// Tell the application to terminate after the window
 		// is gone.
@@ -831,23 +870,66 @@ LRESULT CALLBACK WndProc(HWND    hWnd,
 	case WM_KEYDOWN:
 	{
 		if (wParam == VK_UP)
-			xRot -= 5.0f;
-
-		if (wParam == VK_DOWN)
 			xRot += 5.0f;
 
+		if (wParam == VK_DOWN)
+			xRot -= 5.0f;
+
 		if (wParam == VK_LEFT)
-			yRot -= 5.0f;
+			yRot += 5.0f;
 
 		if (wParam == VK_RIGHT)
-			yRot += 5.0f;
+			yRot -= 5.0f;
 
 		xRot = (const int)xRot % 360;
 		yRot = (const int)yRot % 360;
 
+		if (wParam == '1')
+			rot1 -= 5.0f;
+		if (wParam == '2')
+			rot1 += 5.0f;
+
+		if (wParam == '3')
+			rot2 -= 5.0f;
+		if (wParam == '4')
+			rot2 += 5.0f;
+
+		if (wParam == '5')
+			rot3 -= 5.0f;
+		if (wParam == '6')
+			rot3 += 5.0f;
+
 		InvalidateRect(hWnd, NULL, FALSE);
 	}
 	break;
+
+	case WM_TIMER:
+		if (wParam == 101)
+		{
+			licznik++;
+			if (licznik > 90)
+			{
+				licznik = 0;
+			}
+			else if (licznik > 20)
+			{
+				rot2 += 9.0;
+			}
+			else if (licznik > 20)
+			{
+				rot2 -= 9.0;
+			}
+			else if (licznik > 10)
+			{
+				rot1 -= 9.0;
+			}
+			else
+			{
+				rot1 += 9.0;
+			}
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		break;
 
 	default:   // Passes it on if unproccessed
 		return (DefWindowProc(hWnd, message, wParam, lParam));
